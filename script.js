@@ -40,7 +40,7 @@ function addSubjectItem() {
 }
 
 document.getElementById('bookName').addEventListener('keypress', (event) => {
-    if (event.key === 'Enter'){
+    if (event.key === 'Enter') {
         addSubjectItem()
     }
 })
@@ -92,39 +92,34 @@ function renderTests() {
         const card = document.createElement('div'); card.className = 'test-card';
 
         // Header
-        const headerRow = document.createElement('div'); 
-        headerRow.style.display = 'flex'; 
-        headerRow.style.justifyContent = 'space-between'; 
+        const headerRow = document.createElement('div');
+        headerRow.style.display = 'flex';
+        headerRow.style.justifyContent = 'space-between';
         headerRow.style.alignItems = 'center';
         headerRow.innerHTML = `<h3>${t.name} — ${t.date}</h3>`;
-        
+
         // Delete Button
-        const delTestBtn = document.createElement('button'); 
-        delTestBtn.textContent = 'Delete Test'; 
-        delTestBtn.style.background = '#d9534f'; 
-        delTestBtn.style.marginLeft = '10px'; 
+        const delTestBtn = document.createElement('button');
+        delTestBtn.textContent = 'Delete Test';
+        delTestBtn.style.background = '#d9534f';
+        delTestBtn.style.marginLeft = '10px';
         delTestBtn.onclick = () => deleteTest(ti);
 
         // Task Status
-        const data = JSON.parse(localStorage.getItem('tests'))
-        let totalTasks = data[0].subjects.Botany.length + data[0].subjects.Zoology.length + data[0].subjects.Physics.length + data[0].subjects.Chemistry.length;
-        let completedTasks = 0
-        let incompletedTasks = totalTasks;
+        let totalTasks = 0;
+        let completedTasks = 0;
 
-        for (let i = 0; i < data.length; i++) {
-            const element = data[i];
-            let subjects = ["Botany", "Zoology", "Physics", "Chemistry"]
-            subjects.forEach(sub => {
-                for (let j = 0; j < element.subjects[sub].length; j++) {
-                    const elm2 = element.subjects[sub][j];
-                    if(elm2.completed === true) {
-                        completedTasks++;
-                        incompletedTasks--;
-                    }
-                }
+        let subjects = ["Botany", "Zoology", "Physics", "Chemistry"];
+
+        subjects.forEach(sub => {
+            totalTasks += t.subjects[sub].length;
+
+            t.subjects[sub].forEach(item => {
+                if (item.completed) completedTasks++;
             });
-            
-        }
+        });
+
+        let incompletedTasks = totalTasks - completedTasks;
 
         // Task Details
         const details = document.createElement('div')
@@ -136,7 +131,7 @@ function renderTests() {
         details.style.gap = '40px';
         details.style.marginBottom = '20px';
         details.innerHTML = span
-        
+
         headerRow.appendChild(delTestBtn);
         card.appendChild(headerRow);
         card.appendChild(details)
@@ -194,5 +189,5 @@ function deleteItem(ti, sub, si) {
 }
 
 // init
-loadTestSelector(); 
+loadTestSelector();
 renderTests();
