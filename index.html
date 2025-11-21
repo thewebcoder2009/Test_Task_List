@@ -2,38 +2,38 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Test Task List</title>
-  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Test Task List</title>
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="style.css">
+	<script src="script.js" defer></script>
 </head>
 
 <body>
-  <h2>Create Test</h2>
-  <div class="input-section">
-    <input id="testName" placeholder="Test Name" />
-    <input id="testDate" type="date" />
-    <button onclick="createTest()">Create Test</button>
-  </div>
+	<h2>Create Test</h2>
+	<div class="input-section">
+		<input id="testName" placeholder="Test Name" />
+		<input id="testDate" type="date" />
+		<button onclick="createTest()">Create Test</button>
+	</div>
 
-  <h3>Add Chapters & Books</h3>
-  <div class="add-section">
-    <div class="tabs">
-      <button onclick="switchTab('Botany')" id="tab-Botany" class="activeTab">Botany</button>
-      <button onclick="switchTab('Zoology')" id="tab-Zoology">Zoology</button>
-      <button onclick="switchTab('Physics')" id="tab-Physics">Physics</button>
-      <button onclick="switchTab('Chemistry')" id="tab-Chemistry">Chemistry</button>
-    </div>
-    <br />
-    <select id="selectedTest"></select>
-    <input id="chapterName" placeholder="Chapter Name" />
-    <input id="bookName" placeholder="Book Name" />
-    <button onclick="addSubjectItem()">Add</button>
-  </div>
+	<h3>Add Chapters & Books</h3>
+	<div class="add-section">
+		<div class="tabs">
+			<button onclick="switchTab('Botany')" id="tab-Botany" class="activeTab">Botany</button>
+			<button onclick="switchTab('Zoology')" id="tab-Zoology">Zoology</button>
+			<button onclick="switchTab('Physics')" id="tab-Physics">Physics</button>
+			<button onclick="switchTab('Chemistry')" id="tab-Chemistry">Chemistry</button>
+		</div>
+		<br />
+		<select id="selectedTest"></select>
+		<input id="chapterName" placeholder="Chapter Name" />
+		<input id="bookName" placeholder="Book Name" />
+		<button onclick="addSubjectItem()">Add</button>
+	</div>
 
-  <div id="testsContainer"></div>
+	<div id="testsContainer"></div>
 </body>
 
 </html>

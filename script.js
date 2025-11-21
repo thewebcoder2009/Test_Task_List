@@ -65,6 +65,7 @@ function markComplete(testIndex, subject, itemIndex) {
     item.completed = !item.completed;
     save();
     updateSingleItem(testIndex, subject, itemIndex);
+    renderTests()
 }
 
 function updateSingleItem(ti, sub, si) {
@@ -90,11 +91,55 @@ function renderTests() {
     tests.forEach((t, ti) => {
         const card = document.createElement('div'); card.className = 'test-card';
 
-        const headerRow = document.createElement('div'); headerRow.style.display = 'flex'; headerRow.style.justifyContent = 'space-between'; headerRow.style.alignItems = 'center';
+        // Header
+        const headerRow = document.createElement('div'); 
+        headerRow.style.display = 'flex'; 
+        headerRow.style.justifyContent = 'space-between'; 
+        headerRow.style.alignItems = 'center';
         headerRow.innerHTML = `<h3>${t.name} — ${t.date}</h3>`;
-        const delTestBtn = document.createElement('button'); delTestBtn.textContent = 'Delete Test'; delTestBtn.style.background = '#d9534f'; delTestBtn.style.marginLeft = '10px'; delTestBtn.onclick = () => deleteTest(ti);
+        
+        // Delete Button
+        const delTestBtn = document.createElement('button'); 
+        delTestBtn.textContent = 'Delete Test'; 
+        delTestBtn.style.background = '#d9534f'; 
+        delTestBtn.style.marginLeft = '10px'; 
+        delTestBtn.onclick = () => deleteTest(ti);
+
+        // Task Status
+        const data = JSON.parse(localStorage.getItem('tests'))
+        let totalTasks = data[0].subjects.Botany.length + data[0].subjects.Zoology.length + data[0].subjects.Physics.length + data[0].subjects.Chemistry.length;
+        let completedTasks = 0
+        let incompletedTasks = totalTasks;
+
+        for (let i = 0; i < data.length; i++) {
+            const element = data[i];
+            let subjects = ["Botany", "Zoology", "Physics", "Chemistry"]
+            subjects.forEach(sub => {
+                for (let j = 0; j < element.subjects[sub].length; j++) {
+                    const elm2 = element.subjects[sub][j];
+                    if(elm2.completed === true) {
+                        completedTasks++;
+                        incompletedTasks--;
+                    }
+                }
+            });
+            
+        }
+
+        // Task Details
+        const details = document.createElement('div')
+        const span = `<span><span style="font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; text-decoration: underline;">TOTAL WORK:</span> ${totalTasks}</span>
+                      <span><span style="font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; text-decoration: underline;">COMPLETED:</span> ${completedTasks}</span>
+                      <span><span style="font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; text-decoration: underline;">LEFT:</span> ${incompletedTasks}</span>
+                    `;
+        details.style.display = 'flex';
+        details.style.gap = '40px';
+        details.style.marginBottom = '20px';
+        details.innerHTML = span
+        
         headerRow.appendChild(delTestBtn);
         card.appendChild(headerRow);
+        card.appendChild(details)
 
         Object.keys(t.subjects).forEach(sub => {
             const subId = `sub-${ti}-${sub}`;
@@ -149,4 +194,5 @@ function deleteItem(ti, sub, si) {
 }
 
 // init
-loadTestSelector(); renderTests();
+loadTestSelector(); 
+renderTests();
