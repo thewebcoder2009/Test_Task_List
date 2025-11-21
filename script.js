@@ -36,8 +36,14 @@ function addSubjectItem() {
     if (index === '' || !chapter || !book) return alert('Fill all fields');
     tests[index].subjects[currentTab].push({ chapter, book, completed: false });
     save(); renderTests();
-    document.getElementById('chapterName').value = ''; document.getElementById('bookName').value = '';
+    document.getElementById('bookName').value = '';
 }
+
+document.getElementById('bookName').addEventListener('keypress', (event) => {
+    if (event.key === 'Enter'){
+        addSubjectItem()
+    }
+})
 
 // toggle collapse with smooth animation
 function toggleCollapse(id) {
