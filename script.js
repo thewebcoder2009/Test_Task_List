@@ -151,7 +151,7 @@ function renderTests() {
                 const btnWrap = document.createElement('div'); btnWrap.style.display = 'flex'; btnWrap.style.gap = '6px';
 
                 const btnCheck = document.createElement('button'); btnCheck.className = 'check-btn'; btnCheck.textContent = item.completed ? '✔' : '○'; btnCheck.onclick = (e) => { e.stopPropagation(); markComplete(ti, sub, si); };
-                const btnDelete = document.createElement('button'); btnDelete.textContent = '✖'; btnDelete.style.background = '#d9534f'; btnDelete.onclick = (e) => { e.stopPropagation(); deleteItem(ti, sub, si); };
+                const btnDelete = document.createElement('button'); btnDelete.textContent = '✖'; btnDelete.style.background = '#d9534f'; btnDelete.onclick = (e) => { e.stopPropagation(); deleteItem(ti, sub, si); }; btnDelete.style.height = '40px'; btnDelete.style.width = '35px';
 
                 btnWrap.appendChild(btnCheck);
                 btnWrap.appendChild(btnDelete);
@@ -176,16 +176,24 @@ function renderTests() {
 }
 
 function deleteTest(i) {
-    tests.splice(i, 1);
-    save();
-    renderTests();
-    loadTestSelector()
+    if (confirm("Are you sure you want to delete this test?")){
+        tests.splice(i, 1);
+        save();
+        renderTests();
+        loadTestSelector()
+    } else {
+        return
+    }
 }
 
 function deleteItem(ti, sub, si) {
-    tests[ti].subjects[sub].splice(si, 1);
-    save();
-    renderTests();
+    if (confirm("Are you sure you want to delete this task?")) {
+        tests[ti].subjects[sub].splice(si, 1);
+        save();
+        renderTests();
+    } else {
+        return
+    }
 }
 
 // init

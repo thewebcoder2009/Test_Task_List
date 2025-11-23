@@ -139,6 +139,8 @@ button:hover {
 
 .check-btn {
     background: var(--accent);
+    height: 40px;
+    width: 34px;
     color: #fff;
     border: 0;
     padding: 6px 10px;
