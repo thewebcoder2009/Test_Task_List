@@ -81,6 +81,18 @@ function updateSingleItem(ti, sub, si) {
     if (btn) btn.textContent = item.completed ? '✔' : '○';
 }
 
+function toggleTestCard(id) {
+    const element = document.getElementsByClassName(id)[0];
+    if (!element) return;
+    if (element.classList.contains('open')){
+        element.classList.remove('open');
+        element.style.maxHeight = '40px';
+    } else {
+        element.classList.add('open');
+        element.style.maxHeight = element.scrollHeight + 'px';
+    }
+}
+
 // full render but preserve which subject panels were open
 function renderTests() {
     const container = document.getElementById('testsContainer');
@@ -89,14 +101,15 @@ function renderTests() {
     container.innerHTML = '';
 
     tests.forEach((t, ti) => {
-        const card = document.createElement('div'); card.className = 'test-card';
+        const card = document.createElement('div');
+        card.className = `test-card test-${ti}`;
 
         // Header
         const headerRow = document.createElement('div');
         headerRow.style.display = 'flex';
-        headerRow.style.justifyContent = 'space-between';
+        headerRow.style.justifyContent = 'flex-end';
         headerRow.style.alignItems = 'center';
-        headerRow.innerHTML = `<h3>${t.name} — ${t.date}</h3>`;
+        // headerRow.innerHTML = `<h3>${t.name} — ${t.date}</h3>`;
 
         // Delete Button
         const delTestBtn = document.createElement('button');
@@ -131,6 +144,14 @@ function renderTests() {
         details.style.gap = '40px';
         details.style.marginBottom = '20px';
         details.innerHTML = span
+
+        const collapseElement = `<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; cursor: pointer;" onclick="toggleTestCard('test-${ti}')">
+                                    <h3>${t.name} — ${t.date}</h3>
+                                    <span>▼</span>
+                                </div>
+                                <div style="border: 1px solid #787878; height: 0.1px; margin-bottom: 12px;"></div>`;
+
+        card.innerHTML = collapseElement;
 
         headerRow.appendChild(delTestBtn);
         card.appendChild(headerRow);
@@ -176,7 +197,7 @@ function renderTests() {
 }
 
 function deleteTest(i) {
-    if (confirm("Are you sure you want to delete this test?")){
+    if (confirm("Are you sure you want to delete this test?")) {
         tests.splice(i, 1);
         save();
         renderTests();

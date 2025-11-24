@@ -5,6 +5,10 @@
     /* softer green for better contrast */
 }
 
+::-webkit-scrollbar {
+    display: none;
+}
+
 body {
     font-family: Segoe UI, Roboto, system-ui, Arial;
     background: #1a1a1a;
@@ -86,11 +90,16 @@ button:hover {
 }
 
 .test-card {
+    max-height: 40px;
+    overflow: hidden;
     background: #242424;
-    padding: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
     border-radius: 14px;
     margin-bottom: 18px;
     box-shadow: 0 6px 16px rgba(0, 0, 0, .45);
+    transition: max-height .35s ease, padding .25s ease;
     border: 1px solid #3a3a3a;
     color: #f2f2f2;
 }
