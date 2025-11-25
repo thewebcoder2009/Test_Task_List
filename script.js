@@ -35,7 +35,10 @@ function addSubjectItem() {
     const book = document.getElementById('bookName').value.trim();
     if (index === '' || !chapter || !book) return alert('Fill all fields');
     tests[index].subjects[currentTab].push({ chapter, book, completed: false });
-    save(); renderTests();
+    save();
+    renderTests();
+    // recompute the containing test-card height on the next frame so the DOM is updated
+    requestAnimationFrame(() => updateTestCardHeight(Number(index)));
     document.getElementById('bookName').value = '';
 }
 
@@ -79,6 +82,15 @@ function computeExpandedHeight(el) {
     return h;
 }
 
+// update the maxHeight for a specific test-card after its content changed
+function updateTestCardHeight(ti) {
+    const sel = document.querySelector(`.test-${ti}`);
+    if (!sel) return;
+    if (!sel.classList.contains('open')) return;
+    const full = computeExpandedHeight(sel) || sel.scrollHeight;
+    sel.style.maxHeight = full + 'px';
+}
+
 // mark complete but update only the single row DOM to prevent re-render and collapse loss
 function markComplete(testIndex, subject, itemIndex) {
     const item = tests[testIndex].subjects[subject][itemIndex];
@@ -86,7 +98,7 @@ function markComplete(testIndex, subject, itemIndex) {
     item.completed = !item.completed;
     save();
     updateSingleItem(testIndex, subject, itemIndex);
-    renderTests()
+    // renderTests()
 }
 
 function updateSingleItem(ti, sub, si) {
@@ -112,7 +124,6 @@ function toggleTestCard(id) {
         element.classList.add('open');
         // compute the full expanded height (ignoring collapsed subject panels)
         const full = computeExpandedHeight(element) || element.scrollHeight;
-        console.log(full)
         element.style.maxHeight = full + 'px';
     }
 }
@@ -122,6 +133,13 @@ function renderTests() {
     const container = document.getElementById('testsContainer');
     const openSet = new Set();
     document.querySelectorAll('.subject-content.open').forEach(el => openSet.add(el.id));
+    // preserve which test cards are open so re-render doesn't collapse them
+    const testOpenSet = new Set();
+    document.querySelectorAll('.test-card.open').forEach(el => {
+        // find class of form `test-<index>` (avoid matching `test-card`)
+        const cls = Array.from(el.classList).find(c => /^test-\d+$/.test(c));
+        if (cls) testOpenSet.add(cls);
+    });
     container.innerHTML = '';
 
     tests.forEach((t, ti) => {
@@ -215,6 +233,16 @@ function renderTests() {
                 });
             }
         });
+
+        // if this test-card was previously open, restore the open state and height
+        if (testOpenSet.has(`test-${ti}`)) {
+            requestAnimationFrame(() => {
+                // ensure children are in DOM before measuring
+                card.classList.add('open');
+                const full = computeExpandedHeight(card) || card.scrollHeight;
+                card.style.maxHeight = full + 'px';
+            });
+        }
 
         container.appendChild(card);
     });
