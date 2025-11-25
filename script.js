@@ -58,6 +58,27 @@ function toggleCollapse(id) {
     }
 }
 
+// compute full expanded height for an element without causing visual reflow
+function computeExpandedHeight(el) {
+    if (!el) return 0;
+    // clone the node so we can remove max-height restrictions safely
+    const clone = el.cloneNode(true);
+    // ensure children that use max-height are expanded in the clone
+    clone.style.maxHeight = 'none';
+    clone.style.position = 'absolute';
+    clone.style.visibility = 'hidden';
+    clone.style.pointerEvents = 'none';
+    clone.style.height = 'auto';
+    clone.querySelectorAll && clone.querySelectorAll('.subject-content').forEach(sc => {
+        sc.style.maxHeight = 'none';
+        sc.style.padding = '10px 15px';
+    });
+    document.body.appendChild(clone);
+    const h = clone.scrollHeight;
+    document.body.removeChild(clone);
+    return h;
+}
+
 // mark complete but update only the single row DOM to prevent re-render and collapse loss
 function markComplete(testIndex, subject, itemIndex) {
     const item = tests[testIndex].subjects[subject][itemIndex];
@@ -89,7 +110,10 @@ function toggleTestCard(id) {
         element.style.maxHeight = '40px';
     } else {
         element.classList.add('open');
-        element.style.maxHeight = element.scrollHeight + 'px';
+        // compute the full expanded height (ignoring collapsed subject panels)
+        const full = computeExpandedHeight(element) || element.scrollHeight;
+        console.log(full)
+        element.style.maxHeight = full + 'px';
     }
 }
 
