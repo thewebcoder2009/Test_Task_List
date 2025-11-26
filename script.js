@@ -91,6 +91,25 @@ function updateTestCardHeight(ti) {
     sel.style.maxHeight = full + 'px';
 }
 
+// recompute and update the totals displayed in a test-card header without re-rendering
+function updateTestTotals(ti) {
+    const test = tests[ti];
+    if (!test) return;
+    let totalTasks = 0;
+    let completedTasks = 0;
+    Object.keys(test.subjects).forEach(sub => {
+        totalTasks += test.subjects[sub].length;
+        test.subjects[sub].forEach(item => { if (item.completed) completedTasks++; });
+    });
+    const left = totalTasks - completedTasks;
+    const elTotal = document.getElementById(`total-${ti}`);
+    const elCompleted = document.getElementById(`completed-${ti}`);
+    const elLeft = document.getElementById(`left-${ti}`);
+    if (elTotal) elTotal.textContent = totalTasks;
+    if (elCompleted) elCompleted.textContent = completedTasks;
+    if (elLeft) elLeft.textContent = left;
+}
+
 // mark complete but update only the single row DOM to prevent re-render and collapse loss
 function markComplete(testIndex, subject, itemIndex) {
     const item = tests[testIndex].subjects[subject][itemIndex];
@@ -98,7 +117,9 @@ function markComplete(testIndex, subject, itemIndex) {
     item.completed = !item.completed;
     save();
     updateSingleItem(testIndex, subject, itemIndex);
-    // renderTests()
+    // update header totals and adjust test-card height if needed, without full re-render
+    updateTestTotals(testIndex);
+    requestAnimationFrame(() => updateTestCardHeight(testIndex));
 }
 
 function updateSingleItem(ti, sub, si) {
@@ -177,11 +198,12 @@ function renderTests() {
         let incompletedTasks = totalTasks - completedTasks;
 
         // Task Details
-        const details = document.createElement('div')
-        const span = `<span><span style="font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; text-decoration: underline;">TOTAL WORK:</span> ${totalTasks}</span>
-                      <span><span style="font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; text-decoration: underline;">COMPLETED:</span> ${completedTasks}</span>
-                      <span><span style="font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; text-decoration: underline;">LEFT:</span> ${incompletedTasks}</span>
-                    `;
+                const details = document.createElement('div')
+                // provide identifiable spans so we can update totals without re-rendering
+                const span = `<span><span style="font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; text-decoration: underline;">TOTAL WORK:</span> <span id="total-${ti}">${totalTasks}</span></span>
+                                            <span><span style="font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; text-decoration: underline;">COMPLETED:</span> <span id="completed-${ti}">${completedTasks}</span></span>
+                                            <span><span style="font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; text-decoration: underline;">LEFT:</span> <span id="left-${ti}">${incompletedTasks}</span></span>
+                                        `;
         details.style.display = 'flex';
         details.style.gap = '40px';
         details.style.marginBottom = '20px';
