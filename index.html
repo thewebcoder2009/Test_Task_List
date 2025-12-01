@@ -32,6 +32,38 @@
 		<input id="bookName" placeholder="Book Name" />
 		<button onclick="addSubjectItem()">Add</button>
 	</div>
+	<div id="editModal" class="modal-overlay" style="display: none;">
+		<div class="modal-box">
+			<h3>Edit Test</h3>
+
+			<label>Test Name</label>
+			<input id="editName" placeholder="Enter test name">
+
+			<label>Test Date</label>
+			<input id="editDate" type="date">
+
+			<div class="modal-btns">
+				<button class="btn-danger" onclick="closeEditModal()">Cancel</button>
+				<button class="btn-primary" onclick="saveEditModal()">Save</button>
+			</div>
+		</div>
+	</div>
+	<div id="editChapterModal" class="modal-overlay" style="display: none;">
+		<div class="modal-box">
+			<h3>Edit Chapter/Book</h3>
+
+			<label>Chapter Name</label>
+			<input id="editChapterName" placeholder="Enter chapter name">
+			
+			<label>Book Name</label>
+			<input id="editBookName" placeholder="Enter book name">
+
+			<div class="modal-btns">
+				<button class="btn-danger" onclick="closeEditModal()">Cancel</button>
+				<button class="btn-primary" onclick="saveChapterDetails()">Save</button>
+			</div>
+		</div>
+	</div>
 
 	<div id="testsContainer"></div>
 </body>

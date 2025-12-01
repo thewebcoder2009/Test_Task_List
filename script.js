@@ -138,7 +138,7 @@ function updateSingleItem(ti, sub, si) {
 function toggleTestCard(id) {
     const element = document.getElementsByClassName(id)[0];
     if (!element) return;
-    if (element.classList.contains('open')){
+    if (element.classList.contains('open')) {
         element.classList.remove('open');
         element.style.maxHeight = '40px';
     } else {
@@ -172,7 +172,18 @@ function renderTests() {
         headerRow.style.display = 'flex';
         headerRow.style.justifyContent = 'flex-end';
         headerRow.style.alignItems = 'center';
-        // headerRow.innerHTML = `<h3>${t.name} — ${t.date}</h3>`;
+
+        const titleWrap = document.createElement('div');
+        titleWrap.style.display = 'flex';
+        titleWrap.style.alignItems = 'center';
+        titleWrap.style.gap = '10px';
+
+        const editBtn = document.createElement('button');
+        editBtn.textContent = "Edit";
+        editBtn.style.background = "#f0ad4e";
+        editBtn.onclick = () => editTest(ti);
+
+        titleWrap.appendChild(editBtn);
 
         // Delete Button
         const delTestBtn = document.createElement('button');
@@ -198,9 +209,9 @@ function renderTests() {
         let incompletedTasks = totalTasks - completedTasks;
 
         // Task Details
-                const details = document.createElement('div')
-                // provide identifiable spans so we can update totals without re-rendering
-                const span = `<span><span style="font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; text-decoration: underline;">TOTAL WORK:</span> <span id="total-${ti}">${totalTasks}</span></span>
+        const details = document.createElement('div')
+        // provide identifiable spans so we can update totals without re-rendering
+        const span = `<span><span style="font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; text-decoration: underline;">TOTAL WORK:</span> <span id="total-${ti}">${totalTasks}</span></span>
                                             <span><span style="font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; text-decoration: underline;">COMPLETED:</span> <span id="completed-${ti}">${completedTasks}</span></span>
                                             <span><span style="font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; text-decoration: underline;">LEFT:</span> <span id="left-${ti}">${incompletedTasks}</span></span>
                                         `;
@@ -217,6 +228,7 @@ function renderTests() {
 
         card.innerHTML = collapseElement;
 
+        headerRow.appendChild(titleWrap);
         headerRow.appendChild(delTestBtn);
         card.appendChild(headerRow);
         card.appendChild(details)
@@ -237,9 +249,11 @@ function renderTests() {
 
                 const btnCheck = document.createElement('button'); btnCheck.className = 'check-btn'; btnCheck.textContent = item.completed ? '✔' : '○'; btnCheck.onclick = (e) => { e.stopPropagation(); markComplete(ti, sub, si); };
                 const btnDelete = document.createElement('button'); btnDelete.textContent = '✖'; btnDelete.style.background = '#d9534f'; btnDelete.onclick = (e) => { e.stopPropagation(); deleteItem(ti, sub, si); }; btnDelete.style.height = '40px'; btnDelete.style.width = '35px';
+                const editBtn = document.createElement('button'); editBtn.textContent = 'Edit'; editBtn.style.background = '#f0ad4e'; editBtn.onclick = (e) => { e.stopPropagation(); editChapter(ti, sub, si); }; editBtn.style.height = '40px'; 
 
                 btnWrap.appendChild(btnCheck);
                 btnWrap.appendChild(btnDelete);
+                btnWrap.appendChild(editBtn)
                 row.appendChild(left);
                 row.appendChild(btnWrap);
                 content.appendChild(row);
@@ -269,6 +283,75 @@ function renderTests() {
         container.appendChild(card);
     });
 }
+
+let editIndex = null;
+
+/* Open Modal */
+function editTest(i) {
+    editIndex = i;
+    document.getElementById("editName").value = tests[i].name;
+    document.getElementById("editDate").value = tests[i].date;
+
+    document.getElementById("editModal").style.display = "flex";
+}
+
+let testIndex = null;
+let subjectName = '';
+let chapterIndex = null;
+
+function editChapter(i, sub, si) {
+    testIndex = i;
+    subjectName = sub;
+    chapterIndex = si;
+    document.getElementById("editChapterName").value = tests[i].subjects[sub][si].chapter;
+    document.getElementById("editBookName").value = tests[i].subjects[sub][si].book;
+
+    document.getElementById("editChapterModal").style.display = "flex";
+}
+
+/* Close Modal */
+function closeEditModal() {
+    document.getElementById("editModal").style.display = "none";
+    document.getElementById("editChapterModal").style.display = "none";
+}
+
+/* Save & Apply Changes */
+function saveEditModal() {
+    const newName = document.getElementById("editName").value.trim();
+    const newDate = document.getElementById("editDate").value.trim();
+
+    if (!newName || !newDate) {
+        alert("Fill all fields");
+        return;
+    }
+
+    tests[editIndex].name = newName;
+    tests[editIndex].date = newDate;
+
+    save();
+    renderTests();
+    loadTestSelector();
+    closeEditModal();
+}
+
+function saveChapterDetails() {
+    const newChapterName = document.getElementById("editChapterName").value.trim();
+    const newBookName = document.getElementById("editBookName").value.trim();
+
+    if (!newChapterName || !newBookName) {
+        alert("Fill all fields");
+        return;
+    }
+
+    tests[testIndex].subjects[subjectName][chapterIndex].chapter = newChapterName;
+    tests[testIndex].subjects[subjectName][chapterIndex].book = newBookName;
+
+    save();
+    renderTests();
+    loadTestSelector();
+    closeEditModal();
+}
+
 
 function deleteTest(i) {
     if (confirm("Are you sure you want to delete this test?")) {
