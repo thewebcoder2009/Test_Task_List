@@ -108,6 +108,16 @@ function updateTestTotals(ti) {
     if (elTotal) elTotal.textContent = totalTasks;
     if (elCompleted) elCompleted.textContent = completedTasks;
     if (elLeft) elLeft.textContent = left;
+    // update existing status bar (uses class `test-status-<ti>`) and status text
+    const percent = totalTasks ? Math.round((completedTasks / totalTasks) * 100) : 0;
+    const barEl = document.querySelector(`.test-status-${ti}`);
+    if (barEl) barEl.style.width = percent + '%';
+    // update the textual percent inside the statusContainer for this test-card
+    const statusContainer = document.querySelector(`.test-card.test-${ti} .statusContainer`);
+    if (statusContainer) {
+        const span = statusContainer.querySelector('span');
+        if (span) span.textContent = percent + '% Completed';
+    }
 }
 
 // mark complete but update only the single row DOM to prevent re-render and collapse loss
@@ -191,7 +201,7 @@ function renderTests() {
         delTestBtn.style.background = '#d9534f';
         delTestBtn.style.marginLeft = '10px';
         delTestBtn.onclick = () => deleteTest(ti);
-
+        
         // Task Status
         let totalTasks = 0;
         let completedTasks = 0;
@@ -211,10 +221,10 @@ function renderTests() {
         // Task Details
         const details = document.createElement('div')
         // provide identifiable spans so we can update totals without re-rendering
-        const span = `<span><span style="font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; text-decoration: underline;">TOTAL WORK:</span> <span id="total-${ti}">${totalTasks}</span></span>
-                                            <span><span style="font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; text-decoration: underline;">COMPLETED:</span> <span id="completed-${ti}">${completedTasks}</span></span>
-                                            <span><span style="font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; text-decoration: underline;">LEFT:</span> <span id="left-${ti}">${incompletedTasks}</span></span>
-                                        `;
+                const span = `<span><span style="font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; text-decoration: underline;">TOTAL WORK:</span> <span id="total-${ti}">${totalTasks}</span></span>
+                                                    <span><span style="font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; text-decoration: underline;">COMPLETED:</span> <span id="completed-${ti}">${completedTasks}</span></span>
+                                                    <span><span style="font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; text-decoration: underline;">LEFT:</span> <span id="left-${ti}">${incompletedTasks}</span></span>
+                                                `;
         details.style.display = 'flex';
         details.style.gap = '40px';
         details.style.marginBottom = '20px';
@@ -228,10 +238,29 @@ function renderTests() {
 
         card.innerHTML = collapseElement;
 
+        // Status Bar
+        let completedPercentage = Math.floor((completedTasks / totalTasks) * 100) || '0'
+        let progressSpan = `<span>${completedPercentage}% Completed</span>`
+
+        const statusContainer = document.createElement('div')
+        statusContainer.classList.add('statusContainer')
+
+        const progressBar = document.createElement('div')
+        progressBar.classList.add('progressBar')
+
+        const statusBar = `<div style="width: ${completedPercentage}%;" class="statusBar test-status-${ti}"></div>`
+
+        progressBar.innerHTML = statusBar
+        statusContainer.innerHTML = progressSpan
+        statusContainer.appendChild(progressBar)
+        
+        console.log(completedPercentage)
+
         headerRow.appendChild(titleWrap);
         headerRow.appendChild(delTestBtn);
         card.appendChild(headerRow);
         card.appendChild(details)
+        card.appendChild(statusContainer)
 
         Object.keys(t.subjects).forEach(sub => {
             const subId = `sub-${ti}-${sub}`;
@@ -249,7 +278,7 @@ function renderTests() {
 
                 const btnCheck = document.createElement('button'); btnCheck.className = 'check-btn'; btnCheck.textContent = item.completed ? '✔' : '○'; btnCheck.onclick = (e) => { e.stopPropagation(); markComplete(ti, sub, si); };
                 const btnDelete = document.createElement('button'); btnDelete.textContent = '✖'; btnDelete.style.background = '#d9534f'; btnDelete.onclick = (e) => { e.stopPropagation(); deleteItem(ti, sub, si); }; btnDelete.style.height = '40px'; btnDelete.style.width = '35px';
-                const editBtn = document.createElement('button'); editBtn.textContent = 'Edit'; editBtn.style.background = '#f0ad4e'; editBtn.onclick = (e) => { e.stopPropagation(); editChapter(ti, sub, si); }; editBtn.style.height = '40px'; 
+                const editBtn = document.createElement('button'); editBtn.textContent = 'Edit'; editBtn.style.background = '#f0ad4e'; editBtn.onclick = (e) => { e.stopPropagation(); editChapter(ti, sub, si); }; editBtn.style.height = '40px';
 
                 btnWrap.appendChild(btnCheck);
                 btnWrap.appendChild(btnDelete);
@@ -282,6 +311,10 @@ function renderTests() {
 
         container.appendChild(card);
     });
+}
+
+function updateProgressBar() {
+
 }
 
 let editIndex = null;
