@@ -28,6 +28,22 @@ function loadTestSelector() {
     });
 }
 
+function loadTestEditSelector() {
+    const sel = document.getElementById('selectedEditTest');
+    if (!sel) return;
+    sel.innerHTML = '';
+    // Populate subject options once (subjects are fixed), do not repeat per test
+    ["Botany", "Zoology", "Physics", "Chemistry"].forEach((sub) => {
+        const opt = document.createElement('option');
+        opt.className = `item-opt-${sub}`
+        opt.value = sub;
+        opt.textContent = sub;
+        sel.appendChild(opt);
+    });
+}
+
+// loadTestEditSelector()
+
 function addSubjectItem() {
     const sel = document.getElementById('selectedTest');
     const index = sel.value;
@@ -254,8 +270,6 @@ function renderTests() {
         statusContainer.innerHTML = progressSpan
         statusContainer.appendChild(progressBar)
         
-        console.log(completedPercentage)
-
         headerRow.appendChild(titleWrap);
         headerRow.appendChild(delTestBtn);
         card.appendChild(headerRow);
@@ -271,7 +285,7 @@ function renderTests() {
             const content = document.createElement('div'); content.className = 'subject-content'; content.id = subId;
 
             t.subjects[sub].forEach((item, si) => {
-                const row = document.createElement('div'); row.className = 'item';
+                const row = document.createElement('div'); row.className = `item item-${si}-${sub}`;
                 const left = document.createElement('span'); left.textContent = `${item.chapter} — ${item.book}`;
                 if (item.completed) left.classList.add('completed');
                 const btnWrap = document.createElement('div'); btnWrap.style.display = 'flex'; btnWrap.style.gap = '6px';
@@ -313,10 +327,6 @@ function renderTests() {
     });
 }
 
-function updateProgressBar() {
-
-}
-
 let editIndex = null;
 
 /* Open Modal */
@@ -331,13 +341,37 @@ function editTest(i) {
 let testIndex = null;
 let subjectName = '';
 let chapterIndex = null;
+let originalSubjectName = '';
+let currentEditSubject = '';
 
 function editChapter(i, sub, si) {
+    // prepare edit modal state
+    loadTestEditSelector();
     testIndex = i;
     subjectName = sub;
+    originalSubjectName = sub;
+    currentEditSubject = sub;
     chapterIndex = si;
     document.getElementById("editChapterName").value = tests[i].subjects[sub][si].chapter;
     document.getElementById("editBookName").value = tests[i].subjects[sub][si].book;
+
+    const sel = document.getElementById('selectedEditTest');
+    if (sel) {
+        sel.value = sub;
+        // replace any existing handler to avoid duplicates
+        sel.onchange = function () {
+            const newSub = sel.value;
+            if (!newSub || newSub === currentEditSubject) return;
+            const oldClass = `item-${chapterIndex}-${currentEditSubject}`;
+            const newClass = `item-${chapterIndex}-${newSub}`;
+            const el = document.querySelector(`.${oldClass}`) || document.querySelector(`.${newClass}`);
+            if (el) {
+                el.classList.remove(oldClass);
+                el.classList.add(newClass);
+            }
+            currentEditSubject = newSub;
+        };
+    }
 
     document.getElementById("editChapterModal").style.display = "flex";
 }
@@ -376,9 +410,30 @@ function saveChapterDetails() {
         return;
     }
 
-    tests[testIndex].subjects[subjectName][chapterIndex].chapter = newChapterName;
-    tests[testIndex].subjects[subjectName][chapterIndex].book = newBookName;
+    // If subject has changed during edit, move the item between subject arrays
+    const newSubject = currentEditSubject || subjectName;
+    if (newSubject !== originalSubjectName) {
+        // remove from original subject array
+        const item = tests[testIndex].subjects[originalSubjectName][chapterIndex];
+        if (!item) {
+            alert('Original item not found');
+            return;
+        }
+        // update values then move
+        item.chapter = newChapterName;
+        item.book = newBookName;
+        // remove original
+        tests[testIndex].subjects[originalSubjectName].splice(chapterIndex, 1);
+        // append to new subject
+        tests[testIndex].subjects[newSubject].push(item);
+    } else {
+        tests[testIndex].subjects[subjectName][chapterIndex].chapter = newChapterName;
+        tests[testIndex].subjects[subjectName][chapterIndex].book = newBookName;
+    }
 
+    // reset edit modal state
+    originalSubjectName = '';
+    currentEditSubject = '';
     save();
     renderTests();
     loadTestSelector();
