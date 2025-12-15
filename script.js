@@ -15,7 +15,7 @@ function switchTab(tab) {
 function createTest() {
     const name = document.getElementById('testName').value.trim();
     const date = document.getElementById('testDate').value;
-    if (!name || !date) return alert('Enter test name & date');
+    if (!name || !date) return showErrorMessage('Enter test name & date');
     tests.push({ name, date, subjects: { Botany: [], Zoology: [], Physics: [], Chemistry: [] } });
     save(); loadTestSelector(); renderTests();
     document.getElementById('testName').value = '';
@@ -49,7 +49,7 @@ function addSubjectItem() {
     const index = sel.value;
     const chapter = document.getElementById('chapterName').value.trim();
     const book = document.getElementById('bookName').value.trim();
-    if (index === '' || !chapter || !book) return alert('Fill all fields');
+    if (index === '' || !chapter || !book) return showErrorMessage('Fill all fields');
     tests[index].subjects[currentTab].push({ chapter, book, completed: false });
     save();
     renderTests();
@@ -388,7 +388,7 @@ function saveEditModal() {
     const newDate = document.getElementById("editDate").value.trim();
 
     if (!newName || !newDate) {
-        alert("Fill all fields");
+        showErrorMessage("Fill all fields");
         return;
     }
 
@@ -406,7 +406,7 @@ function saveChapterDetails() {
     const newBookName = document.getElementById("editBookName").value.trim();
 
     if (!newChapterName || !newBookName) {
-        alert("Fill all fields");
+        showErrorMessage("Fill all fields");
         return;
     }
 
@@ -416,7 +416,7 @@ function saveChapterDetails() {
         // remove from original subject array
         const item = tests[testIndex].subjects[originalSubjectName][chapterIndex];
         if (!item) {
-            alert('Original item not found');
+            showErrorMessage('Original item not found');
             return;
         }
         // update values then move
@@ -460,6 +460,32 @@ function deleteItem(ti, sub, si) {
     } else {
         return
     }
+}
+
+function showErrorMessage(errMessage) {
+    // show overlay background first, then pop the message without shifting layout
+    const errBox = document.querySelector('.err-box');
+    const errText = document.querySelector('.err-text');
+    if (!errBox || !errText) return;
+    // set message text
+    errText.textContent = errMessage;
+    // ensure visible and animate in
+    // clear any pending hide
+    if (errBox._hideTimeout) {
+        clearTimeout(errBox._hideTimeout);
+        errBox._hideTimeout = null;
+    }
+    // make block visible (it is display:block by default), then add visible class to trigger animations
+    requestAnimationFrame(() => {
+        errBox.classList.add('visible');
+    });
+
+    // hide after delay, remove visible class, then fully hide after transition
+    errBox._hideTimeout = setTimeout(() => {
+        errBox.classList.remove('visible');
+        // allow CSS transition to finish before clearing content
+        setTimeout(() => { errText.textContent = ''; }, 220);
+    }, 2000);
 }
 
 // init
