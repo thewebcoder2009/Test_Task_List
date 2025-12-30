@@ -175,6 +175,25 @@ function toggleTestCard(id) {
     }
 }
 
+// compute days left per test based on t.date parsed to milliseconds (same format as Date.now())
+function calculateDaysLeft() {
+    const now = Date.now();
+    return tests.map(t => {
+        const timestamp = Date.parse(t.date); // ms since epoch (compatible with Date.now())
+        // debug: log parsed timestamp
+        // console.log('Parsed date:', t.date, '->', timestamp);
+        if (!Number.isFinite(timestamp)) return null;
+        const msLeft = timestamp - now;
+        const daysLeft = Math.ceil(msLeft / (1000 * 60 * 60 * 24));
+        console.log(daysLeft)
+        if (daysLeft < 0) {
+            return "Over"
+        } else {
+            return daysLeft + " days left";
+        }
+    });
+}
+
 // full render but preserve which subject panels were open
 function renderTests() {
     const container = document.getElementById('testsContainer');
@@ -246,8 +265,15 @@ function renderTests() {
         details.style.marginBottom = '20px';
         details.innerHTML = span
 
+        const daysArr = calculateDaysLeft();
+        const daysLeft = (daysArr && daysArr[ti] != null) ? daysArr[ti] : '—';
         const collapseElement = `<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; cursor: pointer;" onclick="toggleTestCard('test-${ti}')">
-                                    <h3>${t.name} — ${t.date}</h3>
+                                    <div class="" style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 20px;">
+                                        <h3>${t.name} — ${t.date}</h3>
+                                        <div class="daysLeft">
+                                            (<span class="time">${daysLeft}</span>)
+                                        </div>
+                                    </div>
                                     <span>▼</span>
                                 </div>
                                 <div style="border: 1px solid #787878; height: 0.1px; margin-bottom: 12px;"></div>`;
