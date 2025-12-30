@@ -181,11 +181,9 @@ function calculateDaysLeft() {
     return tests.map(t => {
         const timestamp = Date.parse(t.date); // ms since epoch (compatible with Date.now())
         // debug: log parsed timestamp
-        // console.log('Parsed date:', t.date, '->', timestamp);
         if (!Number.isFinite(timestamp)) return null;
         const msLeft = timestamp - now;
         const daysLeft = Math.ceil(msLeft / (1000 * 60 * 60 * 24));
-        console.log(daysLeft)
         if (daysLeft < 0) {
             return "Over"
         } else {
