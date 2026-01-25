@@ -355,3 +355,70 @@ button:hover {
     transform: translate(-50%, -50%) scale(1);
     opacity: 1;
 }
+
+/* Authentication */
+.authScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #262626;
+    height: 100vh;
+    width: 100%;
+}
+
+.authContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+}
+
+.main-container {
+    top: 50%;
+}
+
+.username {
+    width: 20%;
+    border-radius: 10px 0 0 10px;
+}
+
+.loginBtn {
+    width: 10%;
+    margin-left: -10px;
+    border-radius: 0 10px 10px 0;
+}
+
+.tab-container {
+    position: fixed;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    top: 34%;
+    margin-left: -56px;
+}
+
+.registerFormBtn {
+    background: #d9534f;
+    width: 12%;
+    border-radius: 10px 0 0 10px;
+
+}
+
+.registerFormBtn:hover {
+    background: #f35752 !important;
+    transform: translateY(-6px);
+}
+
+.loginFormBtn {
+    background: #627ebc;
+    width: 12%;
+    border-radius: 0 10px 10px 0;
+}
+
+.loginFormBtn:hover {
+    background: #5968da !important;
+    transform: translateY(-6px);
+}

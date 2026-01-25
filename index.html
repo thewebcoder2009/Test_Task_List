@@ -7,16 +7,36 @@
 	<title>Test Task List</title>
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 	<link rel="stylesheet" href="style.css">
-	<script src="script.js" defer></script>
+	<script src="https://www.gstatic.com/firebasejs/12.8.0/firebase-app-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore-compat.js"></script>
+	<script src="firebaseConfig.js" defer type="module"></script>
+	<script src="script.js" defer type="module"></script>
 	<script src="animation.js" defer></script>
+	<script src="authentication.js" defer type="module"></script>
 </head>
 
 <body>
+	<!-- Authentication -->
+	<div class="authScreen" style="display: block;">
+		<!-- Login -->
+		<div class="tab-container">
+			<button class="registerFormBtn">Register</button>
+			<button class="loginFormBtn">Login</button>
+		</div>
+		<div class="authContainer">
+			<input type="text" class="username">
+			<button class="loginBtn" style="background: #d9534f;">Register</button>
+		</div>
+	</div>
+	<!-- Test Creation -->
 	<h2>Create Test</h2>
-	<div class="input-section">
+	<div class="input-section" style="display: flex; flex-direction: row; gap: 20px; align-items: center;">
 		<input id="testName" placeholder="Test Name" />
 		<input id="testDate" type="date" />
-		<button onclick="createTest()">Create Test</button>
+		<div class="" style="display: flex; flex-direction: row; gap: 900px;">
+			<button onclick="createTest()">Create Test</button>
+			<button class="logoutBtn" style="background: #d9534f;">Logout</button>
+		</div>
 	</div>
 
 	<h3>Add Chapters & Books</h3>
@@ -45,7 +65,7 @@
 
 			<div class="modal-btns">
 				<button class="btn-danger" onclick="closeEditModal()">Cancel</button>
-				<button class="btn-primary" onclick="saveEditModal()">Save</button>
+				<button class="btn-primary" id="saveEditedDataBtn">Save</button>
 			</div>
 		</div>
 	</div>
@@ -61,7 +81,7 @@
 
 			<div class="modal-btns">
 				<button class="btn-danger" onclick="closeEditModal()">Cancel</button>
-				<button class="btn-primary" onclick="saveChapterDetails()">Save</button>
+				<button class="btn-primary" id="saveEditedChapterBtn">Save</button>
 			</div>
 			<select id="selectedEditTest" style="margin-top: 16px; width: 32%;"></select>
 		</div>
