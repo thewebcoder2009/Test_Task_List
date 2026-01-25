@@ -41,7 +41,7 @@ function loadTestSelector() {
     if (userId === null) return
 
     const sel = document.getElementById('selectedTest'); sel.innerHTML = '';
-    db.collection("users").doc(userId).collection("tests").get().then((snap) => {
+    db.collection("users").doc(userId).collection("tests").orderBy("date", "desc").get().then((snap) => {
         snap.forEach((t) => {
             const opt = document.createElement('option');
             opt.value = t.id;
@@ -740,7 +740,7 @@ async function saveChapterDetails(i, sub, si) {
     // reset edit modal state
     originalSubjectName = '';
     currentEditSubject = '';
-        loadTestSelector();
+    loadTestSelector();
     closeEditModal();
 }
 
