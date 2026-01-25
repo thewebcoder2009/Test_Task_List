@@ -775,7 +775,6 @@ async function deleteItem(testId, subject, itemIndex) {
     if (!arr[itemIndex]) return;
 
     if (confirm("Are you sure you want to delete this task?")) {
-        const deletedItem = arr[itemIndex];
         arr.splice(itemIndex, 1)
     
         await testRef.update({
