@@ -563,7 +563,7 @@ async function editChapter(i, sub, si) {
     const testRef = db.collection("users").doc(userId).collection("tests").doc(i);
     let snap = await testRef.get()
 
-    // document.getElementById("editChapterName").value = snap.data().subjects[sub][si].chapter;
+    document.getElementById("editChapterName").value = snap.data().subjects[sub][si].chapter;
     document.getElementById("editBookName").value = snap.data().subjects[sub][si].book;
 
     const sel = document.getElementById('selectedEditTest');
